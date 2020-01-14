@@ -1,3 +1,5 @@
+#TODO implement movement of boards
+
 import sys
 import termios
 import tty
@@ -13,13 +15,21 @@ from getch import _getChUnix as getChar
 
 # variables.scene.showboard()
 mando=objects.Mandalorian()
-mando.render(10,35)
+mando.render(10,10)
+last_moved= int(round(time.time() * 1000))
 while(1):
-    os.system('clear')
     keypressed=input.getpress()
-    # print(keypressed)
     if keypressed=='q':
         quit()
+    if keypressed!='w':
+        variables.count=variables.count+1
     mando.move(keypressed)
-    variables.scene.showboard(0)
-    time.sleep(0.05)
+
+    mando.gravity()
+
+    #Moving the screen move without Moving the Mando
+    mando.move('d')
+    variables.screenpos=variables.screenpos+1
+
+    variables.scene.showboard(variables.screenpos)
+    variables.last_ground_touch=variables.last_ground_touch+1
