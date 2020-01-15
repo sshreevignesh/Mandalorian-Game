@@ -1,27 +1,36 @@
 import numpy as np
-
+import variables
 class board:
     def __init__(self,length,height):
-        self.matrix=np.empty((height,length), dtype='str')
-        self.matrix[:] = ' '
-        self.height=height
-        self.length=length
-        for i in range(self.length):
-            self.matrix[0][i]='_'
-            self.matrix[1][i]='_'
-            self.matrix[height-1][i]='_'
-            self.matrix[height-2][i]='_'
+        self.__matrix=np.empty((height,length), dtype='str')
+        self.__matrix[:] = ' '
+        self.__height=height
+        self.__length=length
+        temp=list("LIVES: 3")
+        for i in range(len(temp)):
+            self.__matrix[1][i]=temp[i]
+        for i in range(self.__length):
+            self.__matrix[0][i]='_'
+            self.__matrix[2][i]='_'
+            self.__matrix[height-1][i]='_'
+            self.__matrix[height-2][i]='_'
 
     def showboard(self,x):
+        temp=list("LIVES : "+variables.lives)
+        for i in range(len(temp)):
+            self.__matrix[1][i+x]=temp[i]
         #Setting the cursor to (0,0)
         print('\033[0;0H')
-        for i in range(len(self.matrix)):
-            for j in range(x,x+170):
-                print(self.matrix[i][j],end = "")
+        for i in range(len(self.__matrix)):
+            for j in range(x,x+variables.screenlength):
+                print(self.__matrix[i][j],end = "")
             print(" ")
 
     def change(self,x,y,c):
-        self.matrix[x][y]=c
+        self.__matrix[x][y]=c
 
     def getxy(self,x,y):
-        return self.matrix[x][y]
+        return self.__matrix[x][y]
+
+    def updatelives(self):
+        variables.lives=str(int(variables.lives)-1)

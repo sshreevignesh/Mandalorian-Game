@@ -7,72 +7,113 @@ import time
 class person:
     # initialises the length,height and coordinates of the character
     def __init__(self,character):
-        self.length=len(character[0])
-        self.height=len(character)
-        self.character=character
+        self._length=len(character[0])
+        self._height=len(character)
+        self._character=character
 
     def render(self,x,y):
-        self.xcoor=x
-        self.ycoor=y
-        for i in range(self.height):
-            for j in range(self.length):
-                variables.scene.change(i+y-self.height,j+x,self.character[i][j])
+        self._xcoor=x
+        self._ycoor=y
+        for i in range(self._height):
+            for j in range(self._length):
+                variables.scene.change(i+y-self._height,j+x,self._character[i][j])
 
 
 class Mandalorian(person):
 
     def __init__(self):
-        self.character=design.mandalorian
-        self.length=len(self.character[0])
-        self.height=len(self.character)
+        self._character=design.mandalorian
+        self._length=len(self._character[0])
+        self._height=len(self._character)
 
-    def move(self,c):
+    def move(self,c,num):
+        for i in range(num):
+            if c=='d':
+                #collision detection with the screen ends
+                if self._xcoor==variables.screenpos+variables.screenlength-self._length:
+                    break
 
-        if c=='d':
-            for i in range(self.height):
-                for j in range(self.length):
-                    variables.scene.change(i+self.ycoor-self.height,j+self.xcoor+1,self.character[i][j])
-            for i in range(self.height):
-                variables.scene.change(i+self.ycoor-self.height,self.xcoor,' ')
-            self.xcoor=self.xcoor+1
+                #collision detection with lasers
+                for i in range(self._height):
+                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) in ['|','0','-','\\','/']):
+                        variables.scene.updatelives()
+                        break
 
-        if c=='a':
-            for i in range(self.height):
-                for j in range(self.length):
-                    variables.scene.change(i+self.ycoor-self.height,j+self.xcoor-1,self.character[i][j])
-            for i in range(self.height):
-                variables.scene.change(i+self.ycoor-self.height,self.xcoor+self.length-1,' ')
-            self.xcoor=self.xcoor-1
+                for i in range(self._height):
+                    for j in range(self._length):
+                        variables.scene.change(i+self._ycoor-self._height,j+self._xcoor+1,self._character[i][j])
+                for i in range(self._height):
+                    variables.scene.change(i+self._ycoor-self._height,self._xcoor,' ')
+                self._xcoor=self._xcoor+1
 
-        if c=='w':
+            if c=='a':
+                #collision detection with screen end
+                if self._xcoor==variables.screenpos:
+                    break
 
-            #collision detection with ceiling
-            for j in range(self.length):
-                if(variables.scene.getxy(self.ycoor-self.height-1,j+self.xcoor)!=' '):
-                    return
+                #collision detection with lasers
+                for i in range(self._height):
+                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor) in ['|','0','-','\\','/']):
+                        variables.scene.updatelives()
+                        break
 
-            for i in range(self.height):
-                for j in range(self.length):
-                    variables.scene.change(i+self.ycoor-1-self.height,j+self.xcoor,self.character[i][j])
-            for j in range(self.length):
-                variables.scene.change(self.ycoor-1,self.xcoor+j,' ')
-            self.ycoor=self.ycoor-1
+                for i in range(self._height):
+                    for j in range(self._length):
+                        variables.scene.change(i+self._ycoor-self._height,j+self._xcoor-1,self._character[i][j])
+                for i in range(self._height):
+                    variables.scene.change(i+self._ycoor-self._height,self._xcoor+self._length-1,' ')
+                self._xcoor=self._xcoor-1
+
+            if c=='w':
+                variables.last_ground_touch=0
+                #collision detection with ceiling
+                for j in range(self._length):
+                    if(variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor)!=' '):
+                        return
+
+                for i in range(self._height):
+                    for j in range(self._length):
+                        variables.scene.change(i+self._ycoor-1-self._height,j+self._xcoor,self._character[i][j])
+                for j in range(self._length):
+                    variables.scene.change(self._ycoor-1,self._xcoor+j,' ')
+                self._ycoor=self._ycoor-1
 
     def gravity(self):
 
-        if variables.count<4:
-            return
+        # #collision detection with floor
+        # for j in range(self._length):
+        #     if(variables.scene.getxy(self._ycoor,j+self._xcoor)!=' '):
+        #         last_ground_touch=0
+        #         return
 
-        #collision detection with floor
-        for j in range(self.length):
-            if(variables.scene.getxy(self.ycoor,j+self.xcoor)!=' '):
-                last_ground_touch=0
-                return
+        for k in range(int(1+variables.last_ground_touch/5)):
+            if self._ycoor==38:
+                break
+            for i in range(self._height):
+                for j in range(self._length):
+                    variables.scene.change(i+self._ycoor+1-self._height,j+self._xcoor,self._character[i][j])
+            for j in range(self._length):
+                variables.scene.change(self._ycoor-self._height,self._xcoor+j,' ')
+            self._ycoor=self._ycoor+1
 
-        for i in range(self.height):
-            for j in range(self.length):
-                variables.scene.change(i+self.ycoor+1-self.height,j+self.xcoor,self.character[i][j])
-        for j in range(self.length):
-            variables.scene.change(self.ycoor-self.height,self.xcoor+j,' ')
-        self.ycoor=self.ycoor+1
-        variables.count=0
+class destroyables(person):
+
+    def __init__(self):
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+    def destroy(self):
+        for i in range(self._height):
+            for j in range(self._length):
+                variables.scene.change(i+self._ycoor-self._height,j+self._xcoor,' ')
+
+class vertical_laser(destroyables):
+
+    def __init__(self):
+        self._character=design.vertical_laser
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+# class coins(destroyables):
+#
+#     def __init__(self)
