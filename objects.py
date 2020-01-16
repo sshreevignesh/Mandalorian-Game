@@ -1,3 +1,4 @@
+#check whether coin and laser at the same time works
 # TODO Implement collision detection for the movements
 # TODO make gravity accelerating
 
@@ -39,6 +40,11 @@ class Mandalorian(person):
                         variables.scene.updatelives()
                         break
 
+                #collecting coins
+                for i in range(self._height):
+                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) == '$'):
+                        variables.scene.updatescore(10)
+
                 for i in range(self._height):
                     for j in range(self._length):
                         variables.scene.change(i+self._ycoor-self._height,j+self._xcoor+1,self._character[i][j])
@@ -51,11 +57,15 @@ class Mandalorian(person):
                 if self._xcoor==variables.screenpos:
                     break
 
+                #collecting coins
+                for i in range(self._height):
+                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) == '$'):
+                        variables.scene.updatescore(10)
+
                 #collision detection with lasers
                 for i in range(self._height):
-                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor) in ['|','0','-','\\','/']):
+                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) in ['|','0','-','\\','/']):
                         variables.scene.updatelives()
-                        break
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -65,11 +75,17 @@ class Mandalorian(person):
                 self._xcoor=self._xcoor-1
 
             if c=='w':
+
                 variables.last_ground_touch=0
+
                 #collision detection with ceiling
+                if(self._ycoor-self._height==3):
+                    return
+
+                #collecting coins
                 for j in range(self._length):
-                    if(variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor)!=' '):
-                        return
+                    if variables.scene.getxy(self._ycoor-2,j+self._xcoor) == "$":
+                        variables.scene.updatescore(10)
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -80,15 +96,16 @@ class Mandalorian(person):
 
     def gravity(self):
 
-        # #collision detection with floor
-        # for j in range(self._length):
-        #     if(variables.scene.getxy(self._ycoor,j+self._xcoor)!=' '):
-        #         last_ground_touch=0
-        #         return
-
         for k in range(int(1+variables.last_ground_touch/5)):
+            #collision detection with floor
             if self._ycoor==38:
                 break
+
+            #collecting coins
+            for j in range(self._length):
+                if variables.scene.getxy(self._ycoor,j+self._xcoor)=="$":
+                    variables.scene.updatescore(10)
+
             for i in range(self._height):
                 for j in range(self._length):
                     variables.scene.change(i+self._ycoor+1-self._height,j+self._xcoor,self._character[i][j])
@@ -114,6 +131,14 @@ class vertical_laser(destroyables):
         self._length=len(self._character[0])
         self._height=len(self._character)
 
-# class coins(destroyables):
-#
-#     def __init__(self)
+class coins(destroyables):
+
+    def __init__(self):
+        self._character=design.coin
+        self._length=1
+        self._height=1
+
+    def render(self,x,y):
+        self._xcoor=x
+        self._ycoor=y
+        variables.scene.change(y,x,self._character)

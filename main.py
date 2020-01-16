@@ -11,14 +11,17 @@ import boards
 import variables
 import input
 import os
+import random
 from getch import _getChUnix as getChar
 
 # variables.scene.showboard()
 mando=objects.Mandalorian()
 mando.render(10,10)
+coin=[objects.coins() for i in range(100)]
+for i in range(100):
+    coin[i].render(random.randint(10,2500),random.randint(5,35))
 vertical_laser1=objects.vertical_laser()
 vertical_laser1.render(150,30)
-last_moved= int(round(time.time() * 1000))
 while(1):
     keypressed=input.getpress()
     if keypressed=='q':

@@ -3,7 +3,7 @@ mandalorian=[list("  O  "),
              list(" ||| "),
              list(" ||| ")]
 
-
+coin="$"
 horizontal_laser=[list("0----------0")]
 
 vertical_laser=[list("0"),
