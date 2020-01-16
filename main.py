@@ -17,11 +17,28 @@ from getch import _getChUnix as getChar
 # variables.scene.showboard()
 mando=objects.Mandalorian()
 mando.render(10,10)
+
 coin=[objects.coins() for i in range(100)]
 for i in range(100):
     coin[i].render(random.randint(10,2500),random.randint(5,35))
-vertical_laser1=objects.vertical_laser()
-vertical_laser1.render(150,30)
+
+vertical_lasers=[objects.vertical_laser() for i in range(5)]
+for i in range(5):
+    vertical_lasers[i].render(random.randint(50,2500),random.randint(15,25))
+
+horizontal_lasers=[objects.horizontal_laser() for i in range(5)]
+for i in range(5):
+    horizontal_lasers[i].render(random.randint(50,2500),random.randint(5,35))
+
+diagonal_lasers1=[objects.diagonal_laser1() for i in range(5)]
+for i in range(5):
+    diagonal_lasers1[i].render(random.randint(50,2500),random.randint(15,25))
+
+diagonal_lasers2=[objects.diagonal_laser2() for i in range(5)]
+for i in range(5):
+    diagonal_lasers2[i].render(random.randint(50,2500),random.randint(15,25))
+
+
 while(1):
     keypressed=input.getpress()
     if keypressed=='q':

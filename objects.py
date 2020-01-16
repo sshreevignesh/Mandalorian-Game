@@ -1,4 +1,6 @@
 #check whether coin and laser at the same time works
+#clear the character after laser
+#check if collison works properly with inputs other than 'd'
 # TODO Implement collision detection for the movements
 # TODO make gravity accelerating
 
@@ -37,12 +39,18 @@ class Mandalorian(person):
                 #collision detection with lasers
                 for i in range(self._height):
                     if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) in ['|','0','-','\\','/']):
+                        self.render(self._xcoor+10,self._ycoor)
+                        for i in range(self._height):
+                            for j in range(self._length):
+                                variables.scene.change(i+self._ycoor-self._height,j+self._xcoor,' ')
+                        self._xcoor=self._xcoor+10
                         variables.scene.updatelives()
                         break
 
                 #collecting coins
                 for i in range(self._height):
                     if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) == '$'):
+                        variables.scene.change(i+self._ycoor-self._height,self._xcoor+self._length," ")
                         variables.scene.updatescore(10)
 
                 for i in range(self._height):
@@ -60,12 +68,15 @@ class Mandalorian(person):
                 #collecting coins
                 for i in range(self._height):
                     if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) == '$'):
+                        variables.scene.change(i+self._ycoor-self._height,self._xcoor-1," ")
                         variables.scene.updatescore(10)
 
                 #collision detection with lasers
                 for i in range(self._height):
                     if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) in ['|','0','-','\\','/']):
+                        self.move('d',10)
                         variables.scene.updatelives()
+                        break
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -84,8 +95,16 @@ class Mandalorian(person):
 
                 #collecting coins
                 for j in range(self._length):
-                    if variables.scene.getxy(self._ycoor-2,j+self._xcoor) == "$":
+                    if variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor) == "$":
+                        variables.scene.change(self._ycoor-self._height-1,j+self._xcoor," ")
                         variables.scene.updatescore(10)
+
+                #collision detection with lasers
+                for j in range(self._length):
+                    if variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor in ['|','0','-','\\','/']):
+                        self.move('d',10)
+                        variables.scene.updatelives()
+                        break
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -104,7 +123,15 @@ class Mandalorian(person):
             #collecting coins
             for j in range(self._length):
                 if variables.scene.getxy(self._ycoor,j+self._xcoor)=="$":
+                    variables.scene.change(self._ycoor,j+self._xcoor," ")
                     variables.scene.updatescore(10)
+
+            #collision detection with lasers
+            for j in range(self._length):
+                if variables.scene.getxy(self._ycoor,j+self._xcoor in ['|','0','-','\\','/']):
+                    self.move('d',10)
+                    variables.scene.updatelives()
+                    break
 
             for i in range(self._height):
                 for j in range(self._length):
@@ -128,6 +155,27 @@ class vertical_laser(destroyables):
 
     def __init__(self):
         self._character=design.vertical_laser
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+class horizontal_laser(destroyables):
+
+    def __init__(self):
+        self._character=design.horizontal_laser
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+class diagonal_laser1(destroyables):
+
+    def __init__(self):
+        self._character=design.diagonal_laser1
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+class diagonal_laser2(destroyables):
+
+    def __init__(self):
+        self._character=design.diagonal_laser2
         self._length=len(self._character[0])
         self._height=len(self._character)
 

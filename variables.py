@@ -9,4 +9,6 @@ scene= boards.board(board_length,board_height)
 screenlength=170
 #stores the number of iterations of continuous free fall
 last_ground_touch=0
+#stores the position of the screen
 screenpos=0
+#last_laser stores the number of blocks since last laser
