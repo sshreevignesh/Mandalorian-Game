@@ -1,9 +1,11 @@
+#Boss loses two lives on one bullet, fix that
+#Colour
+#Shield
+#Boss attack
 #fix falling on horizontal laser (Try collison with ycoor-1 or something)
 #check whether coin and laser at the same time works
-#clear the character after laser
 #check if collison works properly with inputs other than 'd'
 # TODO Implement collision detection for the movements
-# check shooting when at ground
 
 import variables
 import design
@@ -40,11 +42,17 @@ class Mandalorian(person):
         bullet1.render(self._xcoor+4,self._ycoor-4)
         variables.bullet_list.append(bullet1)
 
+    def boost(self):
+        variables.boost=(variables.boost+1)%2
+
     def move(self,c,num):
         for i in range(num):
             if c=='d':
                 #collision detection with the screen ends
                 if self._xcoor==variables.screenpos+variables.screenlength-self._length:
+                    break
+
+                if self._xcoor==variables.board_length-210:
                     break
 
                 #collision detection with lasers
@@ -128,6 +136,9 @@ class Mandalorian(person):
                 if i==0:
                     self.shoot()
 
+            if c=='f':
+                self.boost()
+                break
 
     def gravity(self):
 
@@ -167,6 +178,11 @@ class dragon(person):
             for j in range(self._length):
                 variables.scene.change(i+self._ycoor-self._height,j+self._xcoor,' ')
 
+    def shoot(self):
+        iceball1= iceball()
+        iceball1.render(self._xcoor-100,self._ycoor)
+        variables.iceball_list.append(iceball1)
+
 
 class destroyables(person):
 
@@ -174,6 +190,12 @@ class destroyables(person):
         self._length=len(self._character[0])
         self._height=len(self._character)
 
+    def render(self,x,y):
+        self._xcoor=x
+        self._ycoor=y
+        for i in range(self._height):
+            for j in range(self._length):
+                variables.scene.change(i+y-self._height,j+x,self._character[i][j])
     def destroy(self):
         for i in range(self._height):
             for j in range(self._length):
@@ -238,7 +260,11 @@ class bullet(destroyables):
         variables.scene.change(self._ycoor,self._xcoor,' ')
 
     def collison(self,c):
-
+        if self._xcoor > variables.board_length-200:
+            variables.scene.updatebosslives()
+            self._collided=1
+            self.destroy()
+            return
         if c=='|':
             y=self._ycoor
             while(variables.scene.getxy(y,self._xcoor)=="|"):
@@ -295,6 +321,55 @@ class bullet(destroyables):
     def move(self):
         self.destroy()
         self._xcoor=self._xcoor+1
+        if(variables.scene.getxy(self._ycoor,self._xcoor)==' '):
+            self.render(self._xcoor,self._ycoor)
+            return
+        self.collison(variables.scene.getxy(self._ycoor,self._xcoor))
+
+    def hascollided(self):
+        return self._collided
+
+class magnet(destroyables):
+    def __init__(self):
+        self._character=design.magnet
+        self._length=len(self._character[0])
+        self._height=len(self._character)
+
+    def render(self,x,y):
+        self._xcoor=x
+        self._ycoor=y
+        for i in range(self._height):
+            for j in range(self._length):
+                variables.scene.change(i+y-self._height,j+x,self._character[i][j])
+        variables.magnetx=x
+
+class iceball(destroyables):
+
+    def __init__(self):
+        self._character=design.snowball
+        self._length=1
+        self._height=1
+        self._collided=0
+
+    def getx(self):
+        return self._xcoor
+
+    def render(self,x,y):
+        self._xcoor=x
+        self._ycoor=y
+        variables.scene.change(y,x,self._character)
+
+    def destroy(self):
+        variables.scene.change(self._ycoor,self._xcoor,' ')
+
+    def collison(self):
+        self._collided=1
+        self.destroy()
+        variables.scene.updatelives()
+
+    def move(self):
+        self.destroy()
+        self._xcoor=self._xcoor-1
         if(variables.scene.getxy(self._ycoor,self._xcoor)==' '):
             self.render(self._xcoor,self._ycoor)
             return

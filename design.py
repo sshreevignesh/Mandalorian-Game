@@ -1,4 +1,6 @@
-mandalorian=[list("  O  "),
+from colorama import Fore, Back, init, Style
+mandalorian=[#list(Fore.LIGHTCYAN_EX+"  O  "+Style.RESET_ALL),
+             list("  O  "),
              list("/| |\\"),
              list(" ||| "),
              list(" ||| ")]
@@ -60,3 +62,10 @@ dragon=[
         list("             __-^-_    `)  \-.______________,-~'      "),
         list("            ///,-'~`__--^-  |-------~~~~^'            "),
         list("                   ///,--~`-\                         ")]
+
+snowball="0"
+
+magnet=[list("-------"),
+        list("||   ||"),
+        list("||   ||"),
+        list("||   ||"),]

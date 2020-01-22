@@ -8,7 +8,8 @@ class board:
         self.__length=length
         self._score='0'
         self._lives='3'
-        temp=list("LIVES: "+self._lives+"    Score: "+self._score)
+        self._bosslives=100
+        temp=list("LIVES: "+self._lives+"    Score: "+self._score + " Boss Lives : "+ str(self._bosslives) + " Time Remaining :" +"   ")
         for i in range(len(temp)):
             self.__matrix[1][i]=temp[i]
         for i in range(self.__length):
@@ -18,7 +19,7 @@ class board:
             self.__matrix[height-2][i]='_'
 
     def showboard(self,x):
-        temp=list("LIVES : "+self._lives+"  Score : "+self._score)
+        temp=list("LIVES : "+self._lives+"  Score : "+self._score + " Boss Lives : "+ str(self._bosslives) + " Time Remaining :"+"   ")
         for i in range(len(temp)):
             self.__matrix[1][i+x]=temp[i]
         #Setting the cursor to (0,0)
@@ -39,3 +40,12 @@ class board:
 
     def updatescore(self,points):
         self._score=str(int(self._score)+points)
+
+    def getlives(self):
+        return self._lives
+
+    def getbosslives(self):
+        return self._bosslives
+
+    def updatebosslives(self):
+        self._bosslives=self._bosslives-1
