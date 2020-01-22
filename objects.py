@@ -1,15 +1,10 @@
-#Boss loses two lives on one bullet, fix that
-#Colour
-#Shield
-#Boss attack
 #fix falling on horizontal laser (Try collison with ycoor-1 or something)
 #check whether coin and laser at the same time works
-#check if collison works properly with inputs other than 'd'
-# TODO Implement collision detection for the movements
 
 import variables
 import design
 import time
+
 class person:
     # initialises the length,height and coordinates of the character
     def __init__(self,character):
@@ -36,6 +31,15 @@ class Mandalorian(person):
         self._character=design.mandalorian
         self._length=len(self._character[0])
         self._height=len(self._character)
+        self._shield=0
+        self._last_shield_use=-100
+
+    def render(self,x,y):
+        self._xcoor=x
+        self._ycoor=y
+        for i in range(self._height):
+            for j in range(self._length):
+                variables.scene.change(i+y-self._height,j+x,self._character[i][j])
 
     def shoot(self):
         bullet1= bullet()
@@ -45,7 +49,30 @@ class Mandalorian(person):
     def boost(self):
         variables.boost=(variables.boost+1)%2
 
+    def shield(self):
+        if self._shield==0 and int(round(time.time()))-self._last_shield_use>60:
+            self._shield=1
+            self._character=design.megamandalorian
+            self._shieldstarttime=int(round(time.time()))
+
     def move(self,c,num):
+
+        if self._shield==1 and int(round(time.time()))-self._shieldstarttime>10:
+            self._shield=0
+            self._character=design.mandalorian
+            self._last_shield_use=int(round(time.time()))
+        if c=='s':
+            self.shoot()
+            return
+
+        if c=='f':
+            self.boost()
+            return
+
+        if c=='g':
+            self.shield()
+            return
+
         for i in range(num):
             if c=='d':
                 #collision detection with the screen ends
@@ -55,16 +82,17 @@ class Mandalorian(person):
                 if self._xcoor==variables.board_length-210:
                     break
 
-                #collision detection with lasers
-                for i in range(self._height):
-                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) in ['|','0','-','\\','/']):
-                        for i in range(self._height):
-                            for j in range(self._length):
-                                variables.scene.change(i+self._ycoor-self._height,j+self._xcoor,' ')
-                        self._xcoor=self._xcoor+15
-                        self.render(self._xcoor,self._ycoor)
-                        variables.scene.updatelives()
-                        break
+                if self._shield==0:
+                    #collision detection with lasers
+                    for i in range(self._height):
+                        if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor+self._length) in ['|','0','-','\\','/']):
+                            for i in range(self._height):
+                                for j in range(self._length):
+                                    variables.scene.change(i+self._ycoor-self._height,j+self._xcoor,' ')
+                            self._xcoor=self._xcoor+15
+                            self.render(self._xcoor,self._ycoor)
+                            variables.scene.updatelives()
+                            break
 
                 #collecting coins
                 for i in range(self._height):
@@ -77,6 +105,7 @@ class Mandalorian(person):
                         variables.scene.change(i+self._ycoor-self._height,j+self._xcoor+1,self._character[i][j])
                 for i in range(self._height):
                     variables.scene.change(i+self._ycoor-self._height,self._xcoor,' ')
+
                 self._xcoor=self._xcoor+1
 
             if c=='a':
@@ -90,12 +119,13 @@ class Mandalorian(person):
                         variables.scene.change(i+self._ycoor-self._height,self._xcoor-1," ")
                         variables.scene.updatescore(10)
 
-                #collision detection with lasers
-                for i in range(self._height):
-                    if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) in ['|','0','-','\\','/']):
-                        self.move('d',10)
-                        variables.scene.updatelives()
-                        break
+                if self._shield==0:
+                    #collision detection with lasers
+                    for i in range(self._height):
+                        if (variables.scene.getxy(i+self._ycoor-self._height,self._xcoor-1) in ['|','0','-','\\','/']):
+                            self.move('d',10)
+                            variables.scene.updatelives()
+                            break
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -118,12 +148,13 @@ class Mandalorian(person):
                         variables.scene.change(self._ycoor-self._height-1,j+self._xcoor," ")
                         variables.scene.updatescore(10)
 
-                #collision detection with lasers
-                for j in range(self._length):
-                    if variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor in ['|','0','-','\\','/']):
-                        self.move('d',10)
-                        variables.scene.updatelives()
-                        break
+                if self._shield==0:
+                    #collision detection with lasers
+                    for j in range(self._length):
+                        if variables.scene.getxy(self._ycoor-self._height-1,j+self._xcoor in ['|','0','-','\\','/']):
+                            self.move('d',10)
+                            variables.scene.updatelives()
+                            break
 
                 for i in range(self._height):
                     for j in range(self._length):
@@ -132,13 +163,7 @@ class Mandalorian(person):
                     variables.scene.change(self._ycoor-1,self._xcoor+j,' ')
                 self._ycoor=self._ycoor-1
 
-            if c=='s':
-                if i==0:
-                    self.shoot()
 
-            if c=='f':
-                self.boost()
-                break
 
     def gravity(self):
 
@@ -153,12 +178,13 @@ class Mandalorian(person):
                     variables.scene.change(self._ycoor,j+self._xcoor," ")
                     variables.scene.updatescore(10)
 
-            #collision detection with lasers
-            for j in range(self._length):
-                if variables.scene.getxy(self._ycoor-1,j+self._xcoor in ['|','0','-','\\','/']):
-                    self.move('d',10)
-                    variables.scene.updatelives()
-                    break
+            if self._shield==0:
+                #collision detection with lasers
+                for j in range(self._length):
+                    if variables.scene.getxy(self._ycoor-1,j+self._xcoor in ['|','0','-','\\','/']):
+                        self.move('d',10)
+                        variables.scene.updatelives()
+                        break
 
             for i in range(self._height):
                 for j in range(self._length):
@@ -180,7 +206,7 @@ class dragon(person):
 
     def shoot(self):
         iceball1= iceball()
-        iceball1.render(self._xcoor-100,self._ycoor)
+        iceball1.render(self._xcoor-20,self._ycoor-4)
         variables.iceball_list.append(iceball1)
 
 
@@ -260,6 +286,8 @@ class bullet(destroyables):
         variables.scene.change(self._ycoor,self._xcoor,' ')
 
     def collison(self,c):
+        if self._collided==1:
+            return
         if self._xcoor > variables.board_length-200:
             variables.scene.updatebosslives()
             self._collided=1
@@ -373,7 +401,7 @@ class iceball(destroyables):
         if(variables.scene.getxy(self._ycoor,self._xcoor)==' '):
             self.render(self._xcoor,self._ycoor)
             return
-        self.collison(variables.scene.getxy(self._ycoor,self._xcoor))
+        self.collison()
 
     def hascollided(self):
         return self._collided

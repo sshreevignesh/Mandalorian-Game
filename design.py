@@ -1,10 +1,13 @@
-from colorama import Fore, Back, init, Style
-mandalorian=[#list(Fore.LIGHTCYAN_EX+"  O  "+Style.RESET_ALL),
-             list("  O  "),
+init()
+mandalorian=[list("  O  "),
              list("/| |\\"),
              list(" ||| "),
              list(" ||| ")]
 
+megamandalorian=[list("  M  "),
+                 list("/MMM\\"),
+                 list(" |M| "),
+                 list(" ||| ")]
 
 coin="$"
 bullet=">"

@@ -1,5 +1,3 @@
-#TODO implement movement of boards
-
 import sys
 import termios
 import tty
@@ -41,8 +39,13 @@ for i in range(5):
 
 magnet=objects.magnet()
 magnet.render(random.randint(50,variables.board_length-400),random.randint(15,25))
+iter=0
+lasttime=0
 while(1):
+    iter=iter+1
     if variables.scene.getbosslives()<1:
+        variables.scene.updatescore(5000)
+        variables.scene.showboard(variables.screenpos)
         quit()
     keypressed=input.getpress()
     if keypressed=='q' or variables.scene.getlives()<'1':
@@ -50,7 +53,7 @@ while(1):
     if keypressed!='w':
         mando.move(keypressed,2)
         mando.gravity()
-    if keypressed!='s'and keypressed!='f':
+    if keypressed!='s'and keypressed!='f' and keypressed!='g':
         mando.move(keypressed,2)
         if variables.boost==1:
             mando.move(keypressed,2)
@@ -102,8 +105,9 @@ while(1):
     else:
         boss.render(boss.getx(),boss.gety())
 
-    if variables.screenpos > variables.board_length-290:
+    if variables.screenpos > variables.board_length-300 and int(round(time.time()))-lasttime>2:
         boss.shoot()
+        lasttime=int(round(time.time()))
 
     variables.scene.showboard(variables.screenpos)
     variables.last_ground_touch=variables.last_ground_touch+1
