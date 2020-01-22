@@ -1,6 +1,3 @@
-#fix falling on horizontal laser (Try collison with ycoor-1 or something)
-#check whether coin and laser at the same time works
-
 import variables
 import design
 import time

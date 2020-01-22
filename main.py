@@ -105,7 +105,7 @@ while(1):
     else:
         boss.render(boss.getx(),boss.gety())
 
-    if variables.screenpos > variables.board_length-300 and int(round(time.time()))-lasttime>2:
+    if variables.screenpos > variables.board_length-400 and int(round(time.time()))-lasttime>2:
         boss.shoot()
         lasttime=int(round(time.time()))
 

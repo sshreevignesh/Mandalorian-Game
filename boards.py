@@ -21,6 +21,8 @@ class board:
             self.__matrix[height-2][i]='_'
 
     def showboard(self,x):
+        if 200-int(round(time.time()))+self._start_time < 0:
+            quit()
         temp=list("LIVES : "+self._lives+"   Score: "+self._score + "     Boss Lives : "+ str(self._bosslives) + "     Time Remaining :"+str(200-int(round(time.time()))+self._start_time)+"   ")
         for i in range(len(temp)):
             self.__matrix[1][i+x]=temp[i]

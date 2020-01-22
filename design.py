@@ -1,4 +1,3 @@
-init()
 mandalorian=[list("  O  "),
              list("/| |\\"),
              list(" ||| "),
